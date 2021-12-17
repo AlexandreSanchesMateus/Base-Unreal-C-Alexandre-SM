@@ -104,5 +104,8 @@ public:
 
 	UFUNCTION()
 	virtual void DamagePlayer(int damage);
+
+	UFUNCTION()
+	virtual void Throw();
 };
 

@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "DrawDebugHelpers.h"
 #include "IntroC_projectGameMode.h"
+#include "Projectile.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AIntroC_projectCharacter
@@ -66,6 +67,8 @@ void AIntroC_projectCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AIntroC_projectCharacter::InteractPressed);
+
+	PlayerInputComponent->BindAction("Throw", IE_Pressed, this, &AIntroC_projectCharacter::Throw);
 
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AIntroC_projectCharacter::OnStartRun);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &AIntroC_projectCharacter::OnStopRun);
@@ -149,6 +152,7 @@ void AIntroC_projectCharacter::PlayerDeath()
 	this->UnPossessed();
 }
 
+
 void AIntroC_projectCharacter::DamagePlayer(int damage)
 {
 	CurrentHealth -= damage;
@@ -161,6 +165,18 @@ void AIntroC_projectCharacter::DamagePlayer(int damage)
 	}
 	else if (CurrentHealth > Health) {
 		CurrentHealth = Health;
+	}
+}
+
+
+void AIntroC_projectCharacter::Throw()
+{
+	if (!primitiveComponent) {
+
+		FVector Direction = FollowCamera->GetForwardVector();
+		FVector Location = SceneComponent->GetComponentLocation();
+
+		GetWorld()->SpawnActor<AProjectile>(Location, Direction.Rotation());
 	}
 }
 

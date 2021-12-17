@@ -1,9 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "Projectile.h"
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/GameplayStatics.h"
-#include "Projectile.h"
+#include "Materials/MaterialInstanceDynamic.h"
+
 
 // Sets default values
 AProjectile::AProjectile()
@@ -23,12 +25,14 @@ AProjectile::AProjectile()
 	}
 
 	static ConstructorHelpers::FObjectFinder<UMaterial>MaterialAsset(TEXT("/Game/Material/M-Splash.M-Splash"));
-
+	
 	if (MaterialAsset.Succeeded()) {
-		
+		Material = MaterialAsset.Object;
 	}
 
 	ProjectileComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
+	ProjectileComponent->InitialSpeed = 1500.0f;
+	ProjectileComponent->ProjectileGravityScale = 0.5f;
 	
 	MeshComponent->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 }
@@ -48,10 +52,19 @@ void AProjectile::Tick(float DeltaTime)
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
-	float SizeDecal = FMath::RandRange(30.0f, 0.0f);
-
-	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(OtherActor, Material, FVector(SizeDecal), Hit.Location, NormalImpulse.Rotation());
+	float SizeDecal = FMath::RandRange(30.0f, 20.0f);
 
 	int Frame = FMath::RandRange(0, 3);
+
+	float RColor = FMath::RandRange(0.0f, 1.0f);
+	float GColor = FMath::RandRange(0.0f, 1.0f);
+	float BColor = FMath::RandRange(0.0f, 1.0f);
+
+	UMaterialInstanceDynamic* MaterialInstance = UMaterialInstanceDynamic::Create(Material, this);
+	MaterialInstance->SetScalarParameterValue(FName(TEXT("Frame")), Frame);
+	MaterialInstance->SetVectorParameterValue(FName(TEXT("Color")), FLinearColor(FVector4(RColor, GColor, BColor, 0.0f)));
+
+	UGameplayStatics::SpawnDecalAtLocation(OtherActor, MaterialInstance, FVector(SizeDecal), Hit.Location, Hit.Normal.Rotation());
+	
 	this->Destroy();
 }
