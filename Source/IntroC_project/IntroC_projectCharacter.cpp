@@ -51,9 +51,21 @@ AIntroC_projectCharacter::AIntroC_projectCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>MontageAsset(TEXT("/Game/Model/Soldier/Throw_Montage.Throw_Montage"));
+
+	if (MontageAsset.Succeeded()) {
+		ThrowAnim = MontageAsset.Object;
+
+		
+	}
+
+
 	WalkSpeed = 175.f;
 	RunSpeed = 500.f;
 	Health = 100;
+
+	isCrouching = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -67,6 +79,8 @@ void AIntroC_projectCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AIntroC_projectCharacter::InteractPressed);
+
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AIntroC_projectCharacter::OnCrouch);
 
 	PlayerInputComponent->BindAction("Throw", IE_Pressed, this, &AIntroC_projectCharacter::Throw);
 
@@ -173,11 +187,30 @@ void AIntroC_projectCharacter::Throw()
 {
 	if (!primitiveComponent) {
 
+		/*if (ThrowAnim) {
+			PlayAnimMontage(ThrowAnim);
+			GLog->Log("lancer");
+		}*/
+
 		FVector Direction = FollowCamera->GetForwardVector();
 		FVector Location = SceneComponent->GetComponentLocation();
 
 		GetWorld()->SpawnActor<AProjectile>(Location, Direction.Rotation());
 	}
+}
+
+
+void AIntroC_projectCharacter::OnCrouch()
+{
+	isCrouching = !isCrouching;
+
+	if (isCrouching) {
+		this->Crouch();
+	}
+	else {
+		this->UnCrouch();
+	}
+
 }
 
 

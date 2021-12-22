@@ -48,6 +48,12 @@ public:
 	UPROPERTY()
 	int CurrentHealth;
 
+	UPROPERTY(EditAnywhere)
+	bool isCrouching;
+
+	UPROPERTY(VisibleAnywhere)
+	UAnimMontage* ThrowAnim;
+
 protected:
 
 	void BeginPlay() override;
@@ -107,5 +113,8 @@ public:
 
 	UFUNCTION()
 	virtual void Throw();
+
+	UFUNCTION()
+	virtual void OnCrouch();
 };
 
