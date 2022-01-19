@@ -187,10 +187,10 @@ void AIntroC_projectCharacter::Throw()
 {
 	if (!primitiveComponent) {
 
-		/*if (ThrowAnim) {
+		if (ThrowAnim) {
 			PlayAnimMontage(ThrowAnim);
-			GLog->Log("lancer");
-		}*/
+			//GLog->Log("lancer");
+		}
 
 		FVector Direction = FollowCamera->GetForwardVector();
 		FVector Location = SceneComponent->GetComponentLocation();
