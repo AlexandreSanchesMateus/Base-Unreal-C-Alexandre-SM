@@ -108,7 +108,7 @@ public:
 	UFUNCTION()
 	virtual void PlayerDeath();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void DamagePlayer(int damage);
 
 	UFUNCTION()
